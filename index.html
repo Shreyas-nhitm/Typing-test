@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HippoType - Clean, minimalist speed typing game with adaptive difficulty, code snippets, and live analytics.">
+    <title>HippoType — Minimalist Speed Typing</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <svg class="loader-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                <path d="M584.2 96.36c-28.88-1.701-54.71 17.02-79.74 26.49C490 88.22 455.9 64 416 64c-11.25 0-22 2.252-32 5.877V56C384 42.75 373.2 32 360 32h-16C330.8 32 320 42.75 320 56v49C285.1 79.62 241.2 64 192 64C85.1 64 0 135.6 0 224v232C0 469.3 10.75 480 24 480h48C85.25 480 96 469.3 96 456v-62.87C128.4 407.5 166.8 416 208 416s79.63-8.492 112-22.87V456c0 13.25 10.75 24 24 24h48c13.25 0 24-10.75 24-24V288h128v32c0 8.837 7.163 16 16 16h32c8.837 0 16-7.163 16-16V288c17.62 0 32-14.38 32-32l-.0001-96.07C639.1 127.8 616.4 98.25 584.2 96.36zM447.1 176c-8.875 0-16-7.125-16-16S439.1 144 448 144s16 7.125 16 16S456.9 176 447.1 176z"/>
+            </svg>
+            <div class="loader-dots"><span></span><span></span><span></span></div>
+            <p class="loader-text">HippoType</p>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal" aria-hidden="true">
+        <div class="login-card">
+            <div class="login-brand">
+                <svg class="login-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                    <path d="M584.2 96.36c-28.88-1.701-54.71 17.02-79.74 26.49C490 88.22 455.9 64 416 64c-11.25 0-22 2.252-32 5.877V56C384 42.75 373.2 32 360 32h-16C330.8 32 320 42.75 320 56v49C285.1 79.62 241.2 64 192 64C85.1 64 0 135.6 0 224v232C0 469.3 10.75 480 24 480h48C85.25 480 96 469.3 96 456v-62.87C128.4 407.5 166.8 416 208 416s79.63-8.492 112-22.87V456c0 13.25 10.75 24 24 24h48c13.25 0 24-10.75 24-24V288h128v32c0 8.837 7.163 16 16 16h32c8.837 0 16-7.163 16-16V288c17.62 0 32-14.38 32-32l-.0001-96.07C639.1 127.8 616.4 98.25 584.2 96.36zM447.1 176c-8.875 0-16-7.125-16-16S439.1 144 448 144s16 7.125 16 16S456.9 176 447.1 176z"/>
+                </svg>
+                <h2>HippoType</h2>
+            </div>
+
+            <div class="login-tabs">
+                <button id="tab-login" class="login-tab active">Sign In</button>
+                <button id="tab-signup" class="login-tab">Sign Up</button>
+            </div>
+
+            <div class="login-fields">
+                <input id="login-username" type="text" autocomplete="username" placeholder="Username" spellcheck="false">
+                <input id="login-password" type="password" autocomplete="current-password" placeholder="Password">
+            </div>
+
+            <div id="login-error" class="login-error" aria-live="polite"></div>
+
+            <div class="login-actions">
+                <button id="login-btn" class="btn primary-btn btn-block">Sign In</button>
+                <button id="login-offline-btn" class="btn secondary-btn btn-block" type="button">⚡ Continue Offline</button>
+            </div>
+
+            <div class="login-footer">
+                <button id="login-backend-toggle-btn" class="text-link-btn" type="button">⚙️ Google Sheets Backend</button>
+            </div>
+
+            <div id="login-backend-config" class="backend-config-box hidden">
+                <label class="input-label-sm">Web App URL (Optional)</label>
+                <input id="login-backend-url" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+                <div class="backend-action-row">
+                    <button id="login-save-backend-btn" class="btn primary-btn btn-sm" type="button">Save &amp; Test</button>
+                    <button id="login-reset-backend-btn" class="btn text-link-btn btn-sm" type="button">Clear</button>
+                </div>
+                <div id="login-backend-status" class="backend-status-msg" aria-live="polite"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <!-- Brand -->
+            <div class="brand">
+                <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                    <path d="M584.2 96.36c-28.88-1.701-54.71 17.02-79.74 26.49C490 88.22 455.9 64 416 64c-11.25 0-22 2.252-32 5.877V56C384 42.75 373.2 32 360 32h-16C330.8 32 320 42.75 320 56v49C285.1 79.62 241.2 64 192 64C85.1 64 0 135.6 0 224v232C0 469.3 10.75 480 24 480h48C85.25 480 96 469.3 96 456v-62.87C128.4 407.5 166.8 416 208 416s79.63-8.492 112-22.87V456c0 13.25 10.75 24 24 24h48c13.25 0 24-10.75 24-24V288h128v32c0 8.837 7.163 16 16 16h32c8.837 0 16-7.163 16-16V288c17.62 0 32-14.38 32-32l-.0001-96.07C639.1 127.8 616.4 98.25 584.2 96.36zM447.1 176c-8.875 0-16-7.125-16-16S439.1 144 448 144s16 7.125 16 16S456.9 176 447.1 176z"/>
+                </svg>
+                <span class="brand-name">HippoType</span>
+            </div>
+
+            <!-- Mode & Config Pill Bar -->
+            <nav class="config-bar" aria-label="Typing Configuration">
+                <div class="pill-group">
+                    <select id="testMode" class="pill-select" title="Test Mode">
+                        <option value="15s">15s</option>
+                        <option value="30s">30s</option>
+                        <option value="60s" selected>60s</option>
+                        <option value="120s">120s</option>
+                        <option value="25w">25w</option>
+                        <option value="50w">50w</option>
+                        <option value="100w">100w</option>
+                        <option value="zen">zen</option>
+                    </select>
+
+                    <select id="difficulty" class="pill-select" title="Difficulty">
+                        <option value="easy">easy</option>
+                        <option value="medium" selected>medium</option>
+                        <option value="hard">hard</option>
+                        <option value="expert">expert</option>
+                    </select>
+
+                    <select id="language" class="pill-select" title="Language">
+                        <option value="en" selected>english</option>
+                        <option value="es">spanish</option>
+                        <option value="fr">french</option>
+                        <option value="de">german</option>
+                        <option value="code">code</option>
+                        <option value="steno">steno</option>
+                    </select>
+
+                    <div id="code-lang-group" style="display:none;">
+                        <select id="codeLanguage" class="pill-select" title="Syntax">
+                            <option value="c">c</option>
+                            <option value="cpp">c++</option>
+                            <option value="python" selected>python</option>
+                            <option value="java">java</option>
+                            <option value="react">react</option>
+                        </select>
+                    </div>
+
+                    <span id="adaptive-badge" class="adaptive-indicator hidden" title="Adaptive Mode">🤖</span>
+                </div>
+            </nav>
+
+            <!-- Action Controls -->
+            <div class="action-bar">
+                <button id="newGameBtn" class="icon-btn" title="Restart Test (Tab + Enter)" aria-label="Restart">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                </button>
+                <button id="customTextBtn" class="icon-btn" title="Custom Text" aria-label="Custom Text">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </button>
+                <button id="leaderboardBtn" class="icon-btn" title="Leaderboard" aria-label="Leaderboard">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H7v4h10v-4h-2c-.55 0-1-.45-1-1v-2.34c0-.75.4-1.44 1.05-1.81l2.45-1.4C18.42 9.94 19 8.91 19 7.79V4H5v3.79c0 1.12.58 2.15 1.5 2.66l2.45 1.4c.65.37 1.05 1.06 1.05 1.81z"/></svg>
+                </button>
+                <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Live HUD (Minimal & Focused) -->
+        <div class="live-hud" id="statsPanel">
+            <div class="hud-item hud-time">
+                <span class="hud-value" id="timer">0:00</span>
+            </div>
+            <div class="hud-metrics">
+                <div class="hud-item">
+                    <span class="hud-label" id="live-wpm-label">WPM</span>
+                    <span class="hud-value" id="wpm">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">ACC</span>
+                    <span class="hud-value" id="accuracy">100%</span>
+                </div>
+                <div class="hud-item hud-combo-item">
+                    <span class="hud-label">STREAK</span>
+                    <span class="hud-value" id="combo">0</span>
+                </div>
+                <!-- Hidden error counter for JS hook -->
+                <span id="errors" style="display:none;">0</span>
+            </div>
+        </div>
+
+        <!-- Typing Arena -->
+        <div class="arena-wrapper">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <section id="game-area" class="game-area" tabindex="0" aria-label="Typing test">
+                <input type="text" id="steno-funnel" class="steno-funnel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;">
+                <div id="target-words" class="target-words"></div>
+                <div id="cursor" class="cursor" aria-hidden="true"></div>
+                <div id="focus-prompt" class="focus-prompt">Click or press any key to focus</div>
+            </section>
+        </div>
+
+        <!-- Subtle Controls Hint -->
+        <div class="subtle-hint">
+            <span><kbd>tab</kbd> + <kbd>enter</kbd> to restart</span>
+            <span class="hint-divider">•</span>
+            <span id="welcomeUser" class="user-status-text">Guest</span>
+        </div>
+
+        <!-- Results Panel (Sleek Overlay / Slide) -->
+        <section id="results-panel" class="results-panel hidden" aria-live="polite">
+            <div class="results-card">
+                <div class="results-header">
+                    <h2 class="results-title">Test Complete</h2>
+                    <div class="results-tag" id="results-mode-tag">Standard</div>
+                </div>
+
+                <div class="results-metrics-grid">
+                    <div class="metric-card primary-metric">
+                        <span class="metric-label" id="final-wpm-unit">WPM</span>
+                        <span class="metric-value" id="finalWPM">0</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Accuracy</span>
+                        <span class="metric-value"><span id="finalAccuracy">0</span>%</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Time</span>
+                        <span class="metric-value" id="finalTime">0:00</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Max Streak</span>
+                        <span class="metric-value" id="finalCombo">0</span>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown -->
+                <div class="results-breakdown">
+                    <div class="breakdown-item">
+                        <span>Characters:</span>
+                        <strong><span id="correctCharsCount">0</span> / <span id="totalChars">0</span></strong>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Errors:</span>
+                        <strong id="totalErrorsCount">0</strong>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Raw WPM:</span>
+                        <strong id="rawWPM">0</strong>
+                    </div>
+                </div>
+
+                <!-- Interactive Speed Chart -->
+                <div class="results-chart-box">
+                    <canvas id="wpmChart" height="120"></canvas>
+                </div>
+
+                <!-- Actions -->
+                <div class="results-actions">
+                    <button id="nextBtn" class="btn primary-btn">Next Test →</button>
+                    <button id="retryBtn" class="btn secondary-btn">Try Again</button>
+                    <button id="shareBtn" class="btn tertiary-btn">Share</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hidden hooks for stats state compatibility -->
+        <div style="display:none;">
+            <span id="bestWPM">0</span>
+            <span id="avgWPM">0</span>
+            <span id="totalTests">0</span>
+            <span id="streak">0</span>
+            <span id="rescueTokens">3</span>
+            <div id="achievements-panel"><div id="achievementsGrid"></div></div>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden" role="dialog" aria-hidden="true" aria-modal="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-modal" id="closeSettings" aria-label="Close">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3 class="section-title">Theme &amp; Typography</h3>
+                    <div class="setting-row">
+                        <span>Color Theme</span>
+                        <select id="themeSelect" class="pill-select">
+                            <option value="ocean">Ocean</option>
+                            <option value="dark">Dark</option>
+                            <option value="forest">Forest</option>
+                            <option value="sunset">Sunset</option>
+                            <option value="matrix">Matrix</option>
+                        </select>
+                    </div>
+                    <div class="setting-row">
+                        <span>Font Size</span>
+                        <div class="range-wrap">
+                            <input type="range" id="fontSize" min="16" max="32" value="24">
+                            <span id="fontSizeValue">24px</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3 class="section-title">Behavior</h3>
+                    <label class="setting-toggle-row">
+                        <span>Blind Mode (hide text while typing)</span>
+                        <input type="checkbox" id="blindMode">
+                    </label>
+                    <label class="setting-toggle-row">
+                        <span>Adaptive Difficulty (auto-scale difficulty)</span>
+                        <input type="checkbox" id="adaptiveMode">
+                    </label>
+                </div>
+
+                <div class="settings-section">
+                    <h3 class="section-title">Google Sheets Backend</h3>
+                    <p class="section-hint">Sync registered users and scores with your personal Google Sheet.</p>
+                    <input id="settings-backend-url" class="full-input" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+                    <div class="backend-action-row">
+                        <button id="settings-save-backend-btn" class="btn primary-btn btn-sm">Save &amp; Test</button>
+                        <button id="settings-reset-backend-btn" class="btn secondary-btn btn-sm">Reset</button>
+                    </div>
+                    <div id="settings-backend-status" class="backend-status-msg" aria-live="polite"></div>
+                </div>
+
+                <div class="settings-section">
+                    <h3 class="section-title">Account &amp; Data</h3>
+                    <div class="btn-group">
+                        <button class="btn secondary-btn btn-sm" id="exportStats">Export Stats</button>
+                        <button class="btn danger-btn btn-sm" id="resetStats">Reset All</button>
+                        <button class="btn secondary-btn btn-sm" id="logoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Text Modal -->
+    <div id="custom-text-modal" class="modal hidden" role="dialog" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Custom Text</h2>
+                <button class="close-modal" id="closeCustomText" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="section-hint">Paste your own text, code snippet, or lyrics to practice on:</p>
+                <textarea id="customTextArea" class="custom-textarea" rows="6" placeholder="Paste custom practice text here..."></textarea>
+                <div class="modal-actions">
+                    <button id="useCustomTextBtn" class="btn primary-btn">Start Practice</button>
+                    <button id="clearCustomTextBtn" class="btn secondary-btn">Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal" class="modal hidden" role="dialog" aria-hidden="true">
+        <div class="modal-card modal-card-lg">
+            <div class="modal-header">
+                <h2>Leaderboard</h2>
+                <button class="close-modal" id="closeLeaderboard" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="leaderboard-loading" class="leaderboard-status hidden">
+                    <div class="loader-dots"><span></span><span></span><span></span></div>
+                    <p>Loading scores...</p>
+                </div>
+                <div id="leaderboard-error" class="leaderboard-status hidden error-text"></div>
+                <div class="table-container">
+                    <table class="leaderboard-table hidden" id="leaderboardTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>User</th>
+                                <th id="lb-speed-header">Speed</th>
+                                <th>Accuracy</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="typing.js"></script>
+</body>
+</html>
